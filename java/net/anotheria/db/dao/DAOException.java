@@ -1,5 +1,6 @@
 package net.anotheria.db.dao;
 
+@SuppressWarnings("serial")
 public class DAOException extends Exception{
 	public DAOException(){
 		super();
