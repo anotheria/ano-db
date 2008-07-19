@@ -46,4 +46,8 @@ public abstract class AbstractArray implements Array {
 	
 	@Override
 	public abstract String toString();
+	
+	public void free() throws SQLException {
+		// TODO Auto-generated method stub
+	}
 }
