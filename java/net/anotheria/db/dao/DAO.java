@@ -12,3 +12,4 @@ public interface DAO {
 	
 	public void deleteStructure(Connection connectiion) throws DAOException;
 }
+ 
