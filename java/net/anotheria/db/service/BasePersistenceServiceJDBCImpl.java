@@ -23,9 +23,9 @@ public abstract class BasePersistenceServiceJDBCImpl {
 		dataSource = new BasicDataSource();
 		JDBCConfig config = JDBCConfigFactory.getJDBCConfig();
 		log.info("Using config: "+config);
-		dataSource.setDriverClassName(config.getDriverName());
-		dataSource.setUrl("jdbc:"+config.getVendor()+"://"+config.getHost()+":"+config.getPort()+"/"+config.getDbName());
-		dataSource.setUsername(config.getUserName());
+		dataSource.setDriverClassName(config.getDriver());
+		dataSource.setUrl("jdbc:"+config.getVendor()+"://"+config.getHost()+":"+config.getPort()+"/"+config.getDb());
+		dataSource.setUsername(config.getUsername());
 		dataSource.setPassword(config.getPassword());
 	}
 	
