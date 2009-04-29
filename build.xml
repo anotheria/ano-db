@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="ano-net" default="dist" basedir=".">
+<project name="ano-db" default="dist" basedir=".">
 	<import file="../build/basic-project.xml"/>	
 
 	<!-- 
