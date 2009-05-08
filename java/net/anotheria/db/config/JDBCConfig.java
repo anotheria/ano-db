@@ -6,26 +6,44 @@ import org.configureme.annotations.ConfigureMe;
 @ConfigureMe(name="asg-dbconfig")
 public class JDBCConfig{
 	
-	public static final String DEF_CONFIG_PREFIX = "";
-	public static final String DEF_CONFIG_NAME = "asg.dbconfig";
-
+	/**
+	 * Name of the driver class.
+	 */
 	@Configure private String driver;
+	/**
+	 * Name of the database instance.
+	 */
 	@Configure private String db;
+	/**
+	 * Username to connect with.
+	 */
 	@Configure private String username;
+	/**
+	 * Password to connect with.
+	 */
 	@Configure private String password;
+	/**
+	 * Vendor of the driver
+	 */
 	@Configure private String vendor;
+	/**
+	 * DB host.
+	 */
 	@Configure private String host;
+	/**
+	 * DB Port.
+	 */
 	@Configure private int port;
 	
-	
+	/**
+	 * Creates a new config.
+	 */
 	public JDBCConfig(){
 		host       = "localhost";
 		port       = 5432;
 	}
 
-
-
-	public String toString(){
+	@Override public String toString(){
 		return "Driver: "+getDriver()+", Vendor: "+getVendor()+", DB: "+getDb()+", Username: "+getUsername()+", Pwd:"+getPassword()+" @ "+getHost()+":"+getPort();
 	}
 
