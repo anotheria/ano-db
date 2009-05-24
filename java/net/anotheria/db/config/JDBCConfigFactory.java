@@ -6,7 +6,7 @@ import org.configureme.ConfigurationManager;
  * A factory for creation of JDBCConfig instance.
  * @author lrosenberg
  */
-public class JDBCConfigFactory {
+public final class JDBCConfigFactory {
 	/**
 	 * The singleton instance.
 	 */
@@ -18,7 +18,7 @@ public class JDBCConfigFactory {
 	}
 	
 	/**
-	 * Returns the only existing instance. of the JDBCConfig
+	 * Returns the only existing instance. of the JDBCConfig.
 	 * @return a JDBCConfig
 	 */
 	public static JDBCConfig getJDBCConfig(){

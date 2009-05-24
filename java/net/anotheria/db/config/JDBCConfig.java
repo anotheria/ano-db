@@ -3,6 +3,9 @@ package net.anotheria.db.config;
 import org.configureme.annotations.Configure;
 import org.configureme.annotations.ConfigureMe;
 
+/**
+ * Configuration for jdbc connections.
+ */
 @ConfigureMe(name="asg-dbconfig")
 public class JDBCConfig{
 	
@@ -51,55 +54,55 @@ public class JDBCConfig{
 		return driver;
 	}
 
-	public void setDriver(String driver) {
-		this.driver = driver;
+	public void setDriver(final String aDriver) {
+		driver = aDriver;
 	}
 
 	public String getDb() {
 		return db;
 	}
 
-	public void setDb(String db) {
-		this.db = db;
+	public void setDb(final String aDb) {
+		db = aDb;
 	}
 
 	public String getUsername() {
 		return username;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUsername(final String anUsername) {
+		username = anUsername;
 	}
 
 	public String getPassword() {
 		return password;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setPassword(final String aPassword) {
+		password = aPassword;
 	}
 
 	public String getVendor() {
 		return vendor;
 	}
 
-	public void setVendor(String vendor) {
-		this.vendor = vendor;
+	public void setVendor(final String aVendor) {
+		vendor = aVendor;
 	}
 
 	public String getHost() {
 		return host;
 	}
 
-	public void setHost(String host) {
-		this.host = host;
+	public void setHost(final String aHost) {
+		host = aHost;
 	}
 
 	public int getPort() {
 		return port;
 	}
 
-	public void setPort(int port) {
-		this.port = port;
+	public void setPort(final int aPort) {
+		port = aPort;
 	}
 }
