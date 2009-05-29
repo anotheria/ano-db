@@ -13,6 +13,8 @@ public abstract class RowMapper<T> {
 	}
 	
 	protected List<Integer> convertToList(int[] objs){
+		if(objs == null)
+			return new ArrayList<Integer>();
 		List<Integer> ret = new ArrayList<Integer>(objs.length);
 		for(Object o:objs)
 			ret.add((Integer)o);
@@ -20,6 +22,8 @@ public abstract class RowMapper<T> {
 	}
 	
 	protected List<Long> convertToList(long[] objs){
+		if(objs == null)
+			return new ArrayList<Long>();
 		List<Long> ret = new ArrayList<Long>(objs.length);
 		for(Long o:objs)
 			ret.add(o);
@@ -27,6 +31,8 @@ public abstract class RowMapper<T> {
 	}
 	
 	protected List<String> convertToList(String[] objs){
+		if(objs == null)
+			return new ArrayList<String>();
 		List<String> ret = new ArrayList<String>(objs.length);
 		for(String o:objs)
 			ret.add(o);
