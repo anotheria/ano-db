@@ -38,7 +38,7 @@ public class JDBCConfig{
 	 */
 	@Configure private int port;
 	/**
-	 * Maximum active connections to DB.
+	 * Limit maximum active connections to DB.
 	 */	
 	@Configure private int maxConnections;
 	

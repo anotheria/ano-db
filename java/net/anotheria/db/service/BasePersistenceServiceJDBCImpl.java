@@ -27,6 +27,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 		dataSource.setUrl("jdbc:"+config.getVendor()+"://"+config.getHost()+":"+config.getPort()+"/"+config.getDb());
 		dataSource.setUsername(config.getUsername());
 		dataSource.setPassword(config.getPassword());
+		
 		if (config.getMaxConnections() != Integer.MAX_VALUE)
 			dataSource.setMaxActive(config.getMaxConnections());
 	}
