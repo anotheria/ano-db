@@ -37,13 +37,18 @@ public class JDBCConfig{
 	 * DB Port.
 	 */
 	@Configure private int port;
+	/**
+	 * Maximum active connections to DB.
+	 */	
+	@Configure private int maxConnections;
 	
 	/**
 	 * Creates a new config.
 	 */
 	public JDBCConfig(){
-		host       = "localhost";
-		port       = 5432;
+		host			= "localhost";
+		port			= 5432;
+		maxConnections	= Integer.MAX_VALUE;
 	}
 
 	@Override public String toString(){
@@ -104,5 +109,13 @@ public class JDBCConfig{
 
 	public void setPort(final int aPort) {
 		port = aPort;
+	}
+
+	public void setMaxConnections(int aMaxConnections) {
+		this.maxConnections = aMaxConnections;
+	}
+
+	public int getMaxConnections() {
+		return maxConnections;
 	}
 }
