@@ -41,8 +41,8 @@ public abstract class BasePersistenceServiceJDBCImpl {
 			return;
 		try{
 			c.close();
-		}catch(SQLException ignored){
-			
+		}catch(SQLException e){
+			log.error("release - couldnt close connection", e);
 		}
 	}
 }
