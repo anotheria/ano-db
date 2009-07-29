@@ -3,11 +3,23 @@ package net.anotheria.db.dao;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Used by the DAO to map a single row to an object of class T. 
+ * @author lrosenberg
+ */
 public abstract class RowMapper<T> {
-	
+	/**
+	 * Creates a new object from the current row in the result set.
+	 * @param row
+	 * @return
+	 * @throws RowMapperException
+	 */
 	public abstract T map(ResultSet row) throws RowMapperException;
-	
+	/**
+	 * Trims the string for storage.
+	 * @param source
+	 * @return
+	 */
 	protected String prepareString(String source){
 		return source == null ? "" : source.trim();
 	}
