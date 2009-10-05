@@ -41,6 +41,11 @@ public class JDBCConfig{
 	 * Limit maximum active connections to DB.
 	 */	
 	@Configure private int maxConnections;
+
+    /**
+     * Number of recovery attempts for id.
+     */
+    @Configure private int idRecoveryAttempts;
 	
 	/**
 	 * Creates a new config.
@@ -49,6 +54,7 @@ public class JDBCConfig{
 		host			= "localhost";
 		port			= 5432;
 		maxConnections	= Integer.MAX_VALUE;
+        idRecoveryAttempts = 5;
 	}
 
 	@Override public String toString(){
@@ -118,4 +124,12 @@ public class JDBCConfig{
 	public int getMaxConnections() {
 		return maxConnections;
 	}
+
+    public int getIdRecoveryAttempts() {
+        return idRecoveryAttempts;
+    }
+
+    public void setIdRecoveryAttempts(int aIdRecoveryAttempts) {
+        this.idRecoveryAttempts = aIdRecoveryAttempts;
+    }
 }
