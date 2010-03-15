@@ -1,5 +1,8 @@
 package net.anotheria.db.service;
 
+import java.lang.reflect.InvocationTargetException;
+import java.net.ConnectException;
+import java.net.SocketException;
 import java.sql.*;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -25,6 +28,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
     public static final String META_DATA = "getMetaData";
     public static final Map<String, Class> methodNameClass = new HashMap<String, Class>();
 
+
     static {
         methodNameClass.put(CREATE_STATEMENT, Statement.class);
         methodNameClass.put(PREPARE_STATEMENT, PreparedStatement.class);
@@ -48,6 +52,11 @@ public abstract class BasePersistenceServiceJDBCImpl {
      */
     private GenericReconnectionProxyFactory proxyFactory;
 
+    /**
+     * Reconnect flag
+     */
+    private AtomicBoolean isBeingReconnected = new AtomicBoolean(false);
+
 
     /**
      * Default constructor.
@@ -70,7 +79,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
         dataSource.setUrl("jdbc:" + config.getVendor() + "://" + config.getHost() + ":" + config.getPort() + "/" + config.getDb());
         dataSource.setUsername(config.getUsername());
         dataSource.setPassword(config.getPassword());
-        // dataSource.setValidationQuery("select 1 from dual");
+        // dataSource.setValidationQuery("select 1+1");
 
         if (config.getMaxConnections() != Integer.MAX_VALUE)
             dataSource.setMaxActive(config.getMaxConnections());
@@ -83,7 +92,20 @@ public abstract class BasePersistenceServiceJDBCImpl {
      * @throws SQLException
      */
     protected Connection getConnection() throws SQLException {
-        Connection result = dataSource.getConnection();
+        Connection result = null;
+        try {
+            if (isBeingReconnected.get() == false) {
+                result = dataSource.getConnection();
+            } else {
+                throw new AppConnectionException();
+            }
+        }
+        catch (SQLException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            checkSocketConnectionErrorException(e);
+        }
         result = proxyFactory.getProxy(Connection.class, result);
         return result;
     }
@@ -158,15 +180,64 @@ public abstract class BasePersistenceServiceJDBCImpl {
         close(rs);
     }
 
+
+    /**
+     * Make reconnection by creation of new DataSource.
+     */
+    private synchronized void reconnect() {
+        if (isBeingReconnected.get() == true) {
+            try {
+                init();
+            }
+            catch (Exception e) {
+                log.info("Reconnection failed. Probably the db is down");
+            }
+            finally {
+                isBeingReconnected.set(false);
+            }
+        }
+    }
+
+
+    /**
+     * Check and convert socketException to Business Exception.
+     *
+     * @param error - {@link Throwable} object
+     */
+    private void checkSocketConnectionErrorException(Throwable error) throws AppConnectionException {
+        if (isSocketConnectionErrorException(error)) {
+            throw new AppConnectionException();
+        }
+    }
+
+
+    /**
+     * Check if exception is SocketException
+     *
+     * @param error - {@link Throwable} object
+     */
+    private boolean isSocketConnectionErrorException(Throwable error) throws AppConnectionException {
+        if (error instanceof InvocationTargetException) {
+            error = ((InvocationTargetException) error).getTargetException();
+        }
+
+        if (error instanceof SocketException || error instanceof ConnectException) {
+            return true;
+        }
+
+        if (error.getCause() != null) {
+            return isSocketConnectionErrorException(error.getCause());
+        }
+
+        return false;
+    }
+
+
     /**
      * Generate Proxy for reconnect strategy
      * Use for wrapping Connect
      */
     private class GenericReconnectionProxyFactory {
-        /**
-         * Reconnect flag
-         */
-        private AtomicBoolean isBeingReconnected = new AtomicBoolean(false);
 
         public <T> T getProxy(Class<T> intf, final T obj) {
             return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), new Class[]{intf},
@@ -174,17 +245,19 @@ public abstract class BasePersistenceServiceJDBCImpl {
                         public Object invoke(Object proxy, Method method,
                                              Object[] args) throws Throwable {
 
-                            waitUntilReconnectComplete();
-
                             try {
                                 if (methodNameClass.containsKey(method.getName())) {
                                     return proxyFactory.getProxy(methodNameClass.get(method.getName()), method.invoke(obj, args));
                                 }
                                 return method.invoke(obj, args);
-                            } catch (Exception e) {  //TODO replace with necessary Exception                                 
-                                isBeingReconnected.set(true);
-                                reconnect();
-                                throw e;
+                            } catch (Exception e) {                                   
+                                if (isSocketConnectionErrorException(e)) {
+                                    isBeingReconnected.set(true);
+                                    reconnect();
+                                    throw new AppConnectionException();
+                                } else {
+                                    throw e;
+                                }
                             }
                         }
                     });
@@ -195,19 +268,6 @@ public abstract class BasePersistenceServiceJDBCImpl {
             }
         }
 
-        private synchronized void reconnect() {
-            if (isBeingReconnected.get() == true) {
-                try {
-                    init();
-                }
-                catch (Exception e) {
-                    log.info("Reconnection failed. Probably the db is down");
-                }
-                finally {
-                    isBeingReconnected.set(false);
-                }
-            }
-        }
     }
 
 
