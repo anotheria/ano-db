@@ -48,10 +48,6 @@ public abstract class BasePersistenceServiceJDBCImpl {
      */
     private GenericReconnectionProxyFactory proxyFactory;
 
-    /**
-     * Proxy Factory
-     */
-    private AtomicBoolean isBeeingReconnected = new AtomicBoolean(false);
 
     /**
      * Default constructor.
@@ -163,12 +159,16 @@ public abstract class BasePersistenceServiceJDBCImpl {
     }
 
     /**
-     * Generate Proxy for reconnect stratagy
+     * Generate Proxy for reconnect strategy
      * Use for wrapping Connect
      */
-    public class GenericReconnectionProxyFactory {
+    private class GenericReconnectionProxyFactory {
+        /**
+         * Reconnect flag
+         */
+        private AtomicBoolean isBeingReconnected = new AtomicBoolean(false);
 
-        public <T> T getProxy(Class<T> intf, final T obj) {              
+        public <T> T getProxy(Class<T> intf, final T obj) {
             return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), new Class[]{intf},
                     new InvocationHandler() {
                         public Object invoke(Object proxy, Method method,
@@ -182,32 +182,31 @@ public abstract class BasePersistenceServiceJDBCImpl {
                                 }
                                 return method.invoke(obj, args);
                             } catch (Exception e) {  //TODO replace with necessary Exception                                 
-                                isBeeingReconnected.set(true);
+                                isBeingReconnected.set(true);
                                 reconnect();
                                 throw e;
                             }
                         }
                     });
         }
-    }
 
-    private synchronized void reconnect() {
-        if (isBeeingReconnected.get() == true) {
-            try {
-                init();
-            }
-            catch (Exception e) {
-               log.info("Reconnection failed. Probably the db is down");
-            }
-            finally {
-                isBeeingReconnected.set(false);               
+        private void waitUntilReconnectComplete() {
+            while (isBeingReconnected.get() == true) {
             }
         }
-    }
 
-    private void waitUntilReconnectComplete() {
-        while (isBeeingReconnected.get() == true) {
-
+        private synchronized void reconnect() {
+            if (isBeingReconnected.get() == true) {
+                try {
+                    init();
+                }
+                catch (Exception e) {
+                    log.info("Reconnection failed. Probably the db is down");
+                }
+                finally {
+                    isBeingReconnected.set(false);
+                }
+            }
         }
     }
 
