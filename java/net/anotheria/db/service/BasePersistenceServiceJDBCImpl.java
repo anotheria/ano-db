@@ -85,7 +85,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 			throw new JDBCConnectionException("Database connection problem.");
 
 		try {
-			return proxyFactory.getProxy(Connection.class, dataSource.getConnection());
+			return Connection.class.cast(proxyFactory.makeProxy(Connection.class, dataSource.getConnection()));
 		} catch (SQLException sqle) {
 			handleJDBCConnectionException(sqle);
 			throw sqle;
@@ -199,6 +199,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 		public static final String PREPARE_CALL = "prepareCall";
 		public static final String META_DATA = "getMetaData";
 		public static final String CLOSE = "close";
+		public static final String IS_CLOSED = "isClosed";
 
 		public final Set<String> methodNames = new HashSet<String>();
 		public final Set<String> classNames = new HashSet<String>();
@@ -209,6 +210,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 			methodNames.add(PREPARE_CALL);
 			methodNames.add(META_DATA);
 			methodNames.add(CLOSE);
+			methodNames.add(IS_CLOSED);
 
 			classNames.add(Connection.class.getName());
 			classNames.add(DatabaseMetaData.class.getName());
@@ -218,35 +220,31 @@ public abstract class BasePersistenceServiceJDBCImpl {
 			classNames.add(ResultSet.class.getName());
 		}
 
-		/**
-		 * Make PROXY.
-		 * 
-		 * @param <T>
-		 * @param intf
-		 * @param obj
-		 * @return
-		 */
-		public <T> T getProxy(Class<T> intf, final T obj) {
+		public Object makeProxy(Class<?> intf, final Object obj) {
+			if (classNames.contains(intf.getName()))
+				return Proxy.newProxyInstance(obj.getClass().getClassLoader(), new Class[] { intf }, new InvocationHandler() {
+					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+						if (classNames.contains(method.getDeclaringClass().getName()) && methodNames.contains(method.getName()))
+							return makeProxy(method.getReturnType(), method.invoke(obj, args));
 
-			return intf.cast(Proxy.newProxyInstance(obj.getClass().getClassLoader(), new Class[] { intf }, new InvocationHandler() {
-
-				public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-					if (isBeingReconnected.get())
-						throw new JDBCConnectionException("Database connection problem.");
-
-					try {
-						if (methodNames.contains(method.getName()) && classNames.contains(method.getDeclaringClass().getName()))
-							return proxyFactory.getProxy((Class<T>) method.getDeclaringClass(), (T) method.invoke(obj, args));
-
-						return method.invoke(obj, args);
-					} catch (InvocationTargetException e) {
-						handleJDBCConnectionException(e);
-
-						throw e;
+						return invokeMethod(obj, method, args);
 					}
-				}
-			}));
+				});
 
+			return obj;
+		}
+
+		public Object invokeMethod(Object proxy, Method method, Object[] args) throws Throwable {
+			if (isBeingReconnected.get())
+				throw new JDBCConnectionException("Database connection problem.");
+
+			try {
+				return method.invoke(proxy, args);
+			} catch (InvocationTargetException e) {
+				handleJDBCConnectionException(e);
+
+				throw e;
+			}
 		}
 	}
 
