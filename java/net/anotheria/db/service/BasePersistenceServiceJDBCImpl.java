@@ -82,7 +82,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 */
 	protected Connection getConnection() throws SQLException {
 		if (isBeingReconnected.get())
-			throw new JDBCConnectionException();
+			throw new JDBCConnectionException("Database connection problem.");
 
 		try {
 			return proxyFactory.getProxy(Connection.class, dataSource.getConnection());
@@ -182,7 +182,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 			} finally {
 				isBeingReconnected.set(false);
 			}
-			throw new JDBCConnectionException();
+			throw new JDBCConnectionException("Database connection problem.");
 		}
 
 		if (error.getCause() != null)
@@ -232,7 +232,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 
 				public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 					if (isBeingReconnected.get())
-						throw new JDBCConnectionException();
+						throw new JDBCConnectionException("Database connection problem.");
 
 					try {
 						if (methodNames.contains(method.getName()) && classNames.contains(method.getDeclaringClass().getName()))
