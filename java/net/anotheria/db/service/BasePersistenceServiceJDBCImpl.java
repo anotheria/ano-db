@@ -32,7 +32,6 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	public static final String PREPARE_STATEMENT = "prepareStatement";
 	public static final String PREPARE_CALL = "prepareCall";
 	public static final String META_DATA = "getMetaData";
-	public static final String CLOSE = "close";
 
 	@SuppressWarnings("unchecked")
 	public static final Map<String, Class> methodNameClass = new HashMap<String, Class>();
@@ -42,10 +41,6 @@ public abstract class BasePersistenceServiceJDBCImpl {
 		methodNameClass.put(PREPARE_STATEMENT, PreparedStatement.class);
 		methodNameClass.put(PREPARE_CALL, CallableStatement.class);
 		methodNameClass.put(META_DATA, DatabaseMetaData.class);
-		methodNameClass.put(CLOSE, Statement.class);
-		methodNameClass.put(CLOSE, PreparedStatement.class);
-		methodNameClass.put(CLOSE, CallableStatement.class);
-		methodNameClass.put(CLOSE, Connection.class);
 	}
 
 	/**
@@ -235,7 +230,8 @@ public abstract class BasePersistenceServiceJDBCImpl {
 
 						return method.invoke(obj, args);
 					} catch (InvocationTargetException e) {
-						handleJDBCConnectionException(e.getTargetException());
+						handleJDBCConnectionException(e);
+
 						throw e;
 					}
 				}
