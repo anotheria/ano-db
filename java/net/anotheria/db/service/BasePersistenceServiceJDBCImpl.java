@@ -175,6 +175,9 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 * @throws JDBCConnectionException
 	 */
 	private void handleJDBCConnectionException(Throwable error) throws JDBCConnectionException {
+		if (isBeingReconnected.get())
+			throw new JDBCConnectionException("Database connection problem.");
+
 		if (error instanceof SocketException || error instanceof ConnectException) {
 			isBeingReconnected.set(true);
 			try {
