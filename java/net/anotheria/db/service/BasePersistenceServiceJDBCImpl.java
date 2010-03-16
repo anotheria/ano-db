@@ -1,12 +1,18 @@
 package net.anotheria.db.service;
 
-import java.lang.reflect.InvocationTargetException;
-import java.net.ConnectException;
-import java.net.SocketException;
-import java.sql.*;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.ConnectException;
+import java.net.SocketException;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,253 +28,216 @@ import org.apache.log4j.Logger;
  */
 public abstract class BasePersistenceServiceJDBCImpl {
 
-    public static final String CREATE_STATEMENT = "createStatement";
-    public static final String PREPARE_STATEMENT = "prepareStatement";
-    public static final String PREPARE_CALL = "prepareCall";
-    public static final String META_DATA = "getMetaData";
-    public static final Map<String, Class> methodNameClass = new HashMap<String, Class>();
+	public static final String CREATE_STATEMENT = "createStatement";
+	public static final String PREPARE_STATEMENT = "prepareStatement";
+	public static final String PREPARE_CALL = "prepareCall";
+	public static final String META_DATA = "getMetaData";
+	public static final String CLOSE = "close";
 
+	@SuppressWarnings("unchecked")
+	public static final Map<String, Class> methodNameClass = new HashMap<String, Class>();
 
-    static {
-        methodNameClass.put(CREATE_STATEMENT, Statement.class);
-        methodNameClass.put(PREPARE_STATEMENT, PreparedStatement.class);
-        methodNameClass.put(PREPARE_CALL, CallableStatement.class);
-        methodNameClass.put(META_DATA, DatabaseMetaData.class);
-    }
+	static {
+		methodNameClass.put(CREATE_STATEMENT, Statement.class);
+		methodNameClass.put(PREPARE_STATEMENT, PreparedStatement.class);
+		methodNameClass.put(PREPARE_CALL, CallableStatement.class);
+		methodNameClass.put(META_DATA, DatabaseMetaData.class);
+		methodNameClass.put(CLOSE, Statement.class);
+		methodNameClass.put(CLOSE, PreparedStatement.class);
+		methodNameClass.put(CLOSE, CallableStatement.class);
+		methodNameClass.put(CLOSE, Connection.class);
+	}
 
+	/**
+	 * Data source.
+	 */
+	private BasicDataSource dataSource;
 
-    /**
-     * DataSource.
-     */
-    private BasicDataSource dataSource;
+	/**
+	 * Logger.
+	 */
+	protected Logger log = Logger.getLogger(BasePersistenceServiceJDBCImpl.class.getClass());
 
-    /**
-     * Logger.
-     */
-    protected Logger log;
+	/**
+	 * PROXY factory.
+	 */
+	private GenericReconnectionProxyFactory proxyFactory;
 
-    /**
-     * Proxy Factory
-     */
-    private GenericReconnectionProxyFactory proxyFactory;
+	/**
+	 * Reconnection flag.
+	 */
+	private AtomicBoolean isBeingReconnected = new AtomicBoolean(false);
 
-    /**
-     * Reconnect flag
-     */
-    private AtomicBoolean isBeingReconnected = new AtomicBoolean(false);
+	/**
+	 * Default constructor.
+	 */
+	protected BasePersistenceServiceJDBCImpl() {
+		init();
+		proxyFactory = new GenericReconnectionProxyFactory();
+	}
 
+	/**
+	 * Initialize data source.
+	 */
+	public void init() {
+		BasicDataSource newDataSource = new BasicDataSource();
+		JDBCConfig config = JDBCConfigFactory.getJDBCConfig();
+		log.info("Using config: " + config);
+		newDataSource.setDriverClassName(config.getDriver());
+		newDataSource.setUrl("jdbc:" + config.getVendor() + "://" + config.getHost() + ":" + config.getPort() + "/" + config.getDb());
+		newDataSource.setUsername(config.getUsername());
+		newDataSource.setPassword(config.getPassword());
 
-    /**
-     * Default constructor.
-     */
-    protected BasePersistenceServiceJDBCImpl() {
-        log = Logger.getLogger(this.getClass());
-        init();
-        proxyFactory = new GenericReconnectionProxyFactory();
-    }
+		if (config.getMaxConnections() != Integer.MAX_VALUE)
+			newDataSource.setMaxActive(config.getMaxConnections());
 
+		this.dataSource = newDataSource;
+	}
 
-    /**
-     * Initialize service parameters.
-     */
-    public void init() {
-        dataSource = new BasicDataSource();
-        JDBCConfig config = JDBCConfigFactory.getJDBCConfig();
-        log.info("Using config: " + config);
-        dataSource.setDriverClassName(config.getDriver());
-        dataSource.setUrl("jdbc:" + config.getVendor() + "://" + config.getHost() + ":" + config.getPort() + "/" + config.getDb());
-        dataSource.setUsername(config.getUsername());
-        dataSource.setPassword(config.getPassword());
-        // dataSource.setValidationQuery("select 1+1");
+	/**
+	 * Get connection from pool.
+	 * 
+	 * @return {@link Connection}
+	 * @throws SQLException
+	 */
+	protected Connection getConnection() throws SQLException {
+		if (isBeingReconnected.get() == true)
+			throw new JDBCConnectionException();
 
-        if (config.getMaxConnections() != Integer.MAX_VALUE)
-            dataSource.setMaxActive(config.getMaxConnections());
-    }
+		try {
+			return proxyFactory.getProxy(Connection.class, dataSource.getConnection());
+		} catch (SQLException sqle) {
+			handleJDBCConnectionException(sqle);
+			throw sqle;
+		}
+	}
 
-    /**
-     * Get connection from pool.
-     *
-     * @return {@link Connection}
-     * @throws SQLException
-     */
-    protected Connection getConnection() throws SQLException {
-        Connection result = null;
-        try {
-            if (isBeingReconnected.get() == false) {
-                result = dataSource.getConnection();
-            } else {
-                throw new AppConnectionException();
-            }
-        }
-        catch (SQLException e) {
-            throw e;
-        }
-        catch (Exception e) {
-            checkSocketConnectionErrorException(e);
-        }
-        result = proxyFactory.getProxy(Connection.class, result);
-        return result;
-    }
+	/**
+	 * Close {@link Connection} if opened. All {@link SQLException} on closing are ignored.
+	 * 
+	 * @param conn
+	 *            - {@link Connection} object
+	 */
+	protected void close(Connection conn) {
+		try {
+			if (conn != null && !conn.isClosed()) {
+				conn.close();
+			}
+		} catch (SQLException e) {
+		}
+	}
 
-    /**
-     * Close {@link Connection} if opened. All {@link SQLException} on closing are ignored.
-     *
-     * @param conn - {@link Connection} object
-     */
-    protected void close(Connection conn) {
-        try {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
-        } catch (SQLException e) {
-        }
-    }
+	/**
+	 * Close {@link Statement} if opened. All {@link SQLException} on closing are ignored.
+	 * 
+	 * @param st
+	 *            - {@link Statement} object
+	 */
+	protected void close(Statement st) {
+		if (st != null) {
+			try {
+				st.close();
+			} catch (SQLException e) {
+			}
+		}
+	}
 
-    /**
-     * Close {@link Statement} if opened. All {@link SQLException} on closing are ignored.
-     *
-     * @param st - {@link Statement} object
-     */
-    protected void close(Statement st) {
+	/**
+	 * Close {@link ResultSet} if opened. All {@link SQLException} on closing are ignored.
+	 * 
+	 * @param st
+	 *            - {@link ResultSet} object
+	 */
+	protected void close(ResultSet rs) {
+		if (rs != null) {
+			try {
+				rs.close();
+			} catch (SQLException e) {
+			}
+		}
+	}
 
-        if (st != null) {
-            try {
-                st.close();
-            } catch (SQLException e) {
-            }
-        }
-    }
+	/**
+	 * Close {@link Connection} if opened. All {@link SQLException} on closing are ignored.
+	 * 
+	 * @param conn
+	 *            - {@link Connection} object
+	 */
+	protected void release(Connection conn) {
+		close(conn);
+	}
 
-    /**
-     * Close {@link ResultSet} if opened. All {@link SQLException} on closing are ignored.
-     *
-     * @param st - {@link ResultSet} object
-     */
-    protected void close(ResultSet rs) {
-        if (rs != null) {
-            try {
-                rs.close();
-            } catch (SQLException e) {
-            }
-        }
-    }
+	/**
+	 * Close {@link Statement} if opened. All {@link SQLException} on closing are ignored.
+	 * 
+	 * @param st
+	 *            - {@link Statement} object
+	 */
+	protected void release(Statement st) {
+		close(st);
+	}
 
-    /**
-     * Close {@link Connection} if opened. All {@link SQLException} on closing are ignored.
-     *
-     * @param conn - {@link Connection} object
-     */
-    protected void release(Connection conn) {
-        close(conn);
-    }
+	/**
+	 * Close {@link ResultSet} if opened. All {@link SQLException} on closing are ignored.
+	 * 
+	 * @param st
+	 *            - {@link ResultSet} object
+	 */
+	protected void release(ResultSet rs) {
+		close(rs);
+	}
 
-    /**
-     * Close {@link Statement} if opened. All {@link SQLException} on closing are ignored.
-     *
-     * @param st - {@link Statement} object
-     */
-    protected void release(Statement st) {
-        close(st);
-    }
+	/**
+	 * Check exception for connection exception type and throw named runtime exception.
+	 * 
+	 * @param error
+	 *            - {@link Throwable}
+	 * @throws JDBCConnectionException
+	 */
+	private void handleJDBCConnectionException(Throwable error) throws JDBCConnectionException {
+		if (error instanceof SocketException || error instanceof ConnectException) {
+			isBeingReconnected.set(true);
+			try {
+				init();
+			} finally {
+				isBeingReconnected.set(false);
+			}
+			throw new JDBCConnectionException();
+		}
 
-    /**
-     * Close {@link ResultSet} if opened. All {@link SQLException} on closing are ignored.
-     *
-     * @param st - {@link ResultSet} object
-     */
-    protected void release(ResultSet rs) {
-        close(rs);
-    }
+		if (error.getCause() != null)
+			handleJDBCConnectionException(error.getCause());
+	}
 
+	/**
+	 * Factory for creating PROXY for some JDBC layer implementations for handling JDBC connection exceptions and reloading data source.
+	 */
+	private class GenericReconnectionProxyFactory {
 
-    /**
-     * Make reconnection by creation of new DataSource.
-     */
-    private synchronized void reconnect() {
-        if (isBeingReconnected.get() == true) {
-            try {
-                init();
-            }
-            catch (Exception e) {
-                log.info("Reconnection failed. Probably the db is down");
-            }
-            finally {
-                isBeingReconnected.set(false);
-            }
-        }
-    }
+		/**
+		 * Make PROXY.
+		 * 
+		 * @param <T>
+		 * @param intf
+		 * @param obj
+		 * @return
+		 */
+		@SuppressWarnings("unchecked")
+		public <T> T getProxy(Class<T> intf, final T obj) {
+			return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), new Class[] { intf }, new InvocationHandler() {
+				public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+					try {
+						if (methodNameClass.containsKey(method.getName()))
+							return proxyFactory.getProxy(methodNameClass.get(method.getName()), method.invoke(obj, args));
 
-
-    /**
-     * Check and convert socketException to Business Exception.
-     *
-     * @param error - {@link Throwable} object
-     */
-    private void checkSocketConnectionErrorException(Throwable error) throws AppConnectionException {
-        if (isSocketConnectionErrorException(error)) {
-            throw new AppConnectionException();
-        }
-    }
-
-
-    /**
-     * Check if exception is SocketException
-     *
-     * @param error - {@link Throwable} object
-     */
-    private boolean isSocketConnectionErrorException(Throwable error) throws AppConnectionException {
-        if (error instanceof InvocationTargetException) {
-            error = ((InvocationTargetException) error).getTargetException();
-        }
-
-        if (error instanceof SocketException || error instanceof ConnectException) {
-            return true;
-        }
-
-        if (error.getCause() != null) {
-            return isSocketConnectionErrorException(error.getCause());
-        }
-
-        return false;
-    }
-
-
-    /**
-     * Generate Proxy for reconnect strategy
-     * Use for wrapping Connect
-     */
-    private class GenericReconnectionProxyFactory {
-
-        public <T> T getProxy(Class<T> intf, final T obj) {
-            return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), new Class[]{intf},
-                    new InvocationHandler() {
-                        public Object invoke(Object proxy, Method method,
-                                             Object[] args) throws Throwable {
-
-                            try {
-                                if (methodNameClass.containsKey(method.getName())) {
-                                    return proxyFactory.getProxy(methodNameClass.get(method.getName()), method.invoke(obj, args));
-                                }
-                                return method.invoke(obj, args);
-                            } catch (Exception e) {                                   
-                                if (isSocketConnectionErrorException(e)) {
-                                    isBeingReconnected.set(true);
-                                    reconnect();
-                                    throw new AppConnectionException();
-                                } else {
-                                    throw e;
-                                }
-                            }
-                        }
-                    });
-        }
-
-        private void waitUntilReconnectComplete() {
-            while (isBeingReconnected.get() == true) {
-            }
-        }
-
-    }
-
+						return method.invoke(obj, args);
+					} catch (InvocationTargetException e) {
+						handleJDBCConnectionException(e);
+						throw e;
+					}
+				}
+			});
+		}
+	}
 
 }
