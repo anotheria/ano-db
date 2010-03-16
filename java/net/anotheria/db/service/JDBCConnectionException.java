@@ -15,4 +15,8 @@ public class JDBCConnectionException extends RuntimeException {
 		super(message);
 	}
 
+	public JDBCConnectionException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }

@@ -182,7 +182,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 			} finally {
 				isBeingReconnected.set(false);
 			}
-			throw new JDBCConnectionException("Database connection problem.");
+			throw new JDBCConnectionException("Database connection problem.", error);
 		}
 
 		if (error.getCause() != null)
