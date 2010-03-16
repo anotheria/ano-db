@@ -226,7 +226,6 @@ public abstract class BasePersistenceServiceJDBCImpl {
 		 * @param obj
 		 * @return
 		 */
-
 		public <T> T getProxy(Class<T> intf, final T obj) {
 
 			return intf.cast(Proxy.newProxyInstance(obj.getClass().getClassLoader(), new Class[] { intf }, new InvocationHandler() {
