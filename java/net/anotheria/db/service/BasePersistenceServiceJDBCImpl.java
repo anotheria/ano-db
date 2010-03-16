@@ -226,6 +226,9 @@ public abstract class BasePersistenceServiceJDBCImpl {
 		public <T> T getProxy(Class<T> intf, final T obj) {
 			return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), new Class[] { intf }, new InvocationHandler() {
 				public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+					if (isBeingReconnected.get() == true)
+						throw new JDBCConnectionException();
+
 					try {
 						if (methodNameClass.containsKey(method.getName()))
 							return proxyFactory.getProxy(methodNameClass.get(method.getName()), method.invoke(obj, args));
