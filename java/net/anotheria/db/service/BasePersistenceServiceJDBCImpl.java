@@ -225,7 +225,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 				return Proxy.newProxyInstance(obj.getClass().getClassLoader(), new Class[] { intf }, new InvocationHandler() {
 					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 						if (classNames.contains(method.getDeclaringClass().getName()) && methodNames.contains(method.getName()))
-							return makeProxy(method.getReturnType(), method.invoke(obj, args));
+							return makeProxy(method.getReturnType(), invokeMethod(obj, method, args));
 
 						return invokeMethod(obj, method, args);
 					}
