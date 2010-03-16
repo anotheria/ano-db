@@ -13,8 +13,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.anotheria.db.config.JDBCConfig;
@@ -27,21 +27,6 @@ import org.apache.log4j.Logger;
  * Base persistence service.
  */
 public abstract class BasePersistenceServiceJDBCImpl {
-
-	public static final String CREATE_STATEMENT = "createStatement";
-	public static final String PREPARE_STATEMENT = "prepareStatement";
-	public static final String PREPARE_CALL = "prepareCall";
-	public static final String META_DATA = "getMetaData";
-
-	@SuppressWarnings("unchecked")
-	public static final Map<String, Class> methodNameClass = new HashMap<String, Class>();
-
-	static {
-		methodNameClass.put(CREATE_STATEMENT, Statement.class);
-		methodNameClass.put(PREPARE_STATEMENT, PreparedStatement.class);
-		methodNameClass.put(PREPARE_CALL, CallableStatement.class);
-		methodNameClass.put(META_DATA, DatabaseMetaData.class);
-	}
 
 	/**
 	 * Data source.
@@ -96,7 +81,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 * @throws SQLException
 	 */
 	protected Connection getConnection() throws SQLException {
-		if (isBeingReconnected.get() == true)
+		if (isBeingReconnected.get())
 			throw new JDBCConnectionException();
 
 		try {
@@ -209,6 +194,30 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 */
 	private class GenericReconnectionProxyFactory {
 
+		public static final String CREATE_STATEMENT = "createStatement";
+		public static final String PREPARE_STATEMENT = "prepareStatement";
+		public static final String PREPARE_CALL = "prepareCall";
+		public static final String META_DATA = "getMetaData";
+		public static final String CLOSE = "close";
+
+		public final Set<String> methodNames = new HashSet<String>();
+		public final Set<String> classNames = new HashSet<String>();
+
+		public GenericReconnectionProxyFactory() {
+			methodNames.add(CREATE_STATEMENT);
+			methodNames.add(PREPARE_STATEMENT);
+			methodNames.add(PREPARE_CALL);
+			methodNames.add(META_DATA);
+			methodNames.add(CLOSE);
+
+			classNames.add(Connection.class.getName());
+			classNames.add(DatabaseMetaData.class.getName());
+			classNames.add(Statement.class.getName());
+			classNames.add(PreparedStatement.class.getName());
+			classNames.add(CallableStatement.class.getName());
+			classNames.add(ResultSet.class.getName());
+		}
+
 		/**
 		 * Make PROXY.
 		 * 
@@ -217,16 +226,18 @@ public abstract class BasePersistenceServiceJDBCImpl {
 		 * @param obj
 		 * @return
 		 */
-		@SuppressWarnings("unchecked")
+
 		public <T> T getProxy(Class<T> intf, final T obj) {
-			return (T) Proxy.newProxyInstance(obj.getClass().getClassLoader(), new Class[] { intf }, new InvocationHandler() {
+
+			return intf.cast(Proxy.newProxyInstance(obj.getClass().getClassLoader(), new Class[] { intf }, new InvocationHandler() {
+
 				public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-					if (isBeingReconnected.get() == true)
+					if (isBeingReconnected.get())
 						throw new JDBCConnectionException();
 
 					try {
-						if (methodNameClass.containsKey(method.getName()))
-							return proxyFactory.getProxy(methodNameClass.get(method.getName()), method.invoke(obj, args));
+						if (methodNames.contains(method.getName()) && classNames.contains(method.getDeclaringClass().getName()))
+							return proxyFactory.getProxy((Class<T>) method.getDeclaringClass(), (T) method.invoke(obj, args));
 
 						return method.invoke(obj, args);
 					} catch (InvocationTargetException e) {
@@ -235,7 +246,8 @@ public abstract class BasePersistenceServiceJDBCImpl {
 						throw e;
 					}
 				}
-			});
+			}));
+
 		}
 	}
 
