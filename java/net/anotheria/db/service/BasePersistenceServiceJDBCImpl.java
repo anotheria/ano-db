@@ -235,7 +235,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 
 						return method.invoke(obj, args);
 					} catch (InvocationTargetException e) {
-						handleJDBCConnectionException(e);
+						handleJDBCConnectionException(e.getTargetException());
 						throw e;
 					}
 				}
