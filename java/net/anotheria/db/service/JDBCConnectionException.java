@@ -8,7 +8,7 @@ public class JDBCConnectionException extends RuntimeException {
 	private static final long serialVersionUID = 2856635701712204716L;
 
 	public JDBCConnectionException() {
-		super();
+		super("Database connection problem.");
 	}
 
 	public JDBCConnectionException(String message) {
