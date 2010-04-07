@@ -47,11 +47,21 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 * Reconnection flag.
 	 */
 	private AtomicBoolean isBeingReconnected = new AtomicBoolean(false);
+	
+	/**
+	 * Name of the configuration. Can be ommited.
+	 */
+	private String configName;
 
 	/**
 	 * Default constructor.
 	 */
 	protected BasePersistenceServiceJDBCImpl() {
+		this(null);
+	}
+
+	protected BasePersistenceServiceJDBCImpl(String aConfigName) {
+		configName = aConfigName;
 		init();
 		proxyFactory = new GenericReconnectionProxyFactory();
 	}
@@ -61,7 +71,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 */
 	public void init() {
 		BasicDataSource newDataSource = new BasicDataSource();
-		JDBCConfig config = JDBCConfigFactory.getJDBCConfig();
+		JDBCConfig config = configName == null ? JDBCConfigFactory.getJDBCConfig() : JDBCConfigFactory.getNamedJDBCConfig(configName);
 		log.info("Using config: " + config);
 		newDataSource.setDriverClassName(config.getDriver());
 		newDataSource.setUrl("jdbc:" + config.getVendor() + "://" + config.getHost() + ":" + config.getPort() + "/" + config.getDb());
