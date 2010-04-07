@@ -7,22 +7,13 @@ import org.configureme.ConfigurationManager;
  * @author lrosenberg
  */
 public final class JDBCConfigFactory {
-	/**
-	 * The singleton instance.
-	 */
-	private static final JDBCConfig instance;
-	
-	static{
-		instance = new JDBCConfig();
-		ConfigurationManager.INSTANCE.configure(instance);
-	}
 	
 	/**
 	 * Returns the only existing instance. of the JDBCConfig.
 	 * @return a JDBCConfig
 	 */
 	public static JDBCConfig getJDBCConfig(){
-		return instance;
+		return ConfigHolder.instance;
 	}
 	
 	/**
@@ -34,6 +25,18 @@ public final class JDBCConfigFactory {
 		JDBCConfig ret = new JDBCConfig();
 		ConfigurationManager.INSTANCE.configureAs(ret, name);
 		return ret;
+	}
+	
+	private static final class ConfigHolder{
+		/**
+		 * The singleton instance.
+		 */
+		private static final JDBCConfig instance;
+		
+		static{
+			instance = new JDBCConfig();
+			ConfigurationManager.INSTANCE.configure(instance);
+		}
 	}
 	 
 	/**
