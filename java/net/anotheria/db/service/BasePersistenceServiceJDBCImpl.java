@@ -62,14 +62,14 @@ public abstract class BasePersistenceServiceJDBCImpl {
 
 	protected BasePersistenceServiceJDBCImpl(String aConfigName) {
 		configName = aConfigName;
-		initDataSource();
+		init();
 		proxyFactory = new GenericReconnectionProxyFactory();
 	}
 
 	/**
 	 * Initialize data source.
 	 */
-	private void initDataSource() {
+	public void init() {
 		BasicDataSource newDataSource = new BasicDataSource();
 		JDBCConfig config = (configName == null) ? 
 				JDBCConfigFactory.getJDBCConfig() : 
@@ -193,7 +193,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 		if (error instanceof SocketException || error instanceof ConnectException) {
 			isBeingReconnected.set(true);
 			try {
-				initDataSource();
+				init();
 			} finally {
 				isBeingReconnected.set(false);
 			}
