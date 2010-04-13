@@ -69,7 +69,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	/**
 	 * Initialize data source.
 	 */
-	public void initDataSource() {
+	private void initDataSource() {
 		BasicDataSource newDataSource = new BasicDataSource();
 		JDBCConfig config = (configName == null) ? 
 				JDBCConfigFactory.getJDBCConfig() : 
