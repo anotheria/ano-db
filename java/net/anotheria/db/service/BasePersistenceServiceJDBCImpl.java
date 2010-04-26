@@ -62,8 +62,8 @@ public abstract class BasePersistenceServiceJDBCImpl {
 
 	protected BasePersistenceServiceJDBCImpl(String aConfigName) {
 		configName = aConfigName;
-		init();
 		proxyFactory = new GenericReconnectionProxyFactory();
+		init();		
 	}
 
 	/**
