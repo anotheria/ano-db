@@ -46,6 +46,11 @@ public class JDBCConfig{
      * Number of recovery attempts for id.
      */
     @Configure private int idRecoveryAttempts;
+
+	/**
+	 * Id to start from. "0 - by default".
+	 */
+	@Configure private long startId;
 	
 	/**
 	 * Creates a new config.
@@ -54,7 +59,8 @@ public class JDBCConfig{
 		host			= "localhost";
 		port			= 5432;
 		maxConnections	= Integer.MAX_VALUE;
-        idRecoveryAttempts = 5;
+		idRecoveryAttempts = 5;
+		startId = 0;
 	}
 
 	@Override public String toString(){
@@ -132,4 +138,12 @@ public class JDBCConfig{
     public void setIdRecoveryAttempts(int aIdRecoveryAttempts) {
         this.idRecoveryAttempts = aIdRecoveryAttempts;
     }
+
+	public long getStartId() {
+		return startId;
+	}
+
+	public void setStartId(long aStartId) {
+		this.startId = aStartId;
+	}
 }
