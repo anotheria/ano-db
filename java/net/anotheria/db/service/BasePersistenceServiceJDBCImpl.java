@@ -76,7 +76,10 @@ public abstract class BasePersistenceServiceJDBCImpl {
 				JDBCConfigFactory.getNamedJDBCConfig(configName);
 		log.info("Using config: " + config);
 		newDataSource.setDriverClassName(config.getDriver());
-		newDataSource.setUrl("jdbc:" + config.getVendor() + "://" + config.getHost() + ":" + config.getPort() + "/" + config.getDb());
+		if (config.getPreconfiguredJdbcUrl()!=null && config.getPreconfiguredJdbcUrl().length()>0)
+			newDataSource.setUrl(config.getPreconfiguredJdbcUrl());
+		else
+			newDataSource.setUrl("jdbc:" + config.getVendor() + "://" + config.getHost() + ":" + config.getPort() + "/" + config.getDb());
 		newDataSource.setUsername(config.getUsername());
 		newDataSource.setPassword(config.getPassword());
 

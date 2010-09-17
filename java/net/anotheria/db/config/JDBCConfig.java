@@ -46,12 +46,18 @@ public class JDBCConfig{
      * Number of recovery attempts for id.
      */
     @Configure private int idRecoveryAttempts;
+    
+    /**
+     * Preconfigured jdbc url offers a possibility to provide a custom url to the user of the config.
+     */
+    @Configure private String preconfiguredJdbcUrl;
 
 	/**
 	 * Id to start from. "0 - by default".
 	 */
 	@Configure private long startId;
 	
+
 	/**
 	 * Creates a new config.
 	 */
@@ -64,7 +70,7 @@ public class JDBCConfig{
 	}
 
 	@Override public String toString(){
-		return "Driver: "+getDriver()+", Vendor: "+getVendor()+", DB: "+getDb()+", Username: "+getUsername()+", Pwd:"+getPassword()+" @ "+getHost()+":"+getPort();
+		return "Driver: "+getDriver()+", Vendor: "+getVendor()+", DB: "+getDb()+", Username: "+getUsername()+", Pwd:"+getPassword()+" @ "+getHost()+":"+getPort()+", perconfigured: "+getPreconfiguredJdbcUrl();
 	}
 
 	public String getDriver() {
@@ -138,7 +144,14 @@ public class JDBCConfig{
     public void setIdRecoveryAttempts(int aIdRecoveryAttempts) {
         this.idRecoveryAttempts = aIdRecoveryAttempts;
     }
+    
+	public String getPreconfiguredJdbcUrl() {
+		return preconfiguredJdbcUrl;
+	}
 
+	public void setPreconfiguredJdbcUrl(String preconfiguredJdbcUrl) {
+		this.preconfiguredJdbcUrl = preconfiguredJdbcUrl;
+	}
 	public long getStartId() {
 		return startId;
 	}
@@ -146,4 +159,5 @@ public class JDBCConfig{
 	public void setStartId(long aStartId) {
 		this.startId = aStartId;
 	}
+
 }
