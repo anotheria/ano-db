@@ -3,7 +3,7 @@
   <parent>
 	<groupId>net.anotheria</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.0</version>
+	<version>1.4</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -26,7 +26,7 @@
 	<dependency>
 	  <groupId>commons-dbcp</groupId>
 	  <artifactId>commons-dbcp</artifactId>
-	  <version>1.4</version>
+	  <version>${commons-dbcp.version}</version>
 	</dependency>
   </dependencies>
 
