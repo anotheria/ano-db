@@ -8,7 +8,7 @@ import java.sql.Statement;
 import org.apache.log4j.Logger;
 
 /**
- * Utility class for closing database resources.
+ * Utility class for closing JDBC resources.
  * 
  * @author Alexandr Bolbat
  */
