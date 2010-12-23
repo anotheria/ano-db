@@ -47,7 +47,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 * Reconnection flag.
 	 */
 	private AtomicBoolean isBeingReconnected = new AtomicBoolean(false);
-	
+
 	/**
 	 * Name of the configuration. Can be ommited.
 	 */
@@ -63,7 +63,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	protected BasePersistenceServiceJDBCImpl(String aConfigName) {
 		configName = aConfigName;
 		proxyFactory = new GenericReconnectionProxyFactory();
-		init();		
+		init();
 	}
 
 	/**
@@ -71,12 +71,10 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 */
 	public void init() {
 		BasicDataSource newDataSource = new BasicDataSource();
-		JDBCConfig config = (configName == null) ? 
-				JDBCConfigFactory.getJDBCConfig() : 
-				JDBCConfigFactory.getNamedJDBCConfig(configName);
+		JDBCConfig config = (configName == null) ? JDBCConfigFactory.getJDBCConfig() : JDBCConfigFactory.getNamedJDBCConfig(configName);
 		log.info("Using config: " + config);
 		newDataSource.setDriverClassName(config.getDriver());
-		if (config.getPreconfiguredJdbcUrl()!=null && config.getPreconfiguredJdbcUrl().length()>0)
+		if (config.getPreconfiguredJdbcUrl() != null && config.getPreconfiguredJdbcUrl().length() > 0)
 			newDataSource.setUrl(config.getPreconfiguredJdbcUrl());
 		else
 			newDataSource.setUrl("jdbc:" + config.getVendor() + "://" + config.getHost() + ":" + config.getPort() + "/" + config.getDb());
@@ -113,7 +111,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 * @param conn
 	 *            - {@link Connection} object
 	 */
-	protected void close(Connection conn) {
+	public static void close(Connection conn) {
 		try {
 			if (conn != null && !conn.isClosed()) {
 				conn.close();
@@ -128,7 +126,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 * @param st
 	 *            - {@link Statement} object
 	 */
-	protected void close(Statement st) {
+	public static void close(Statement st) {
 		if (st != null) {
 			try {
 				st.close();
@@ -143,7 +141,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 * @param st
 	 *            - {@link ResultSet} object
 	 */
-	protected void close(ResultSet rs) {
+	public static void close(ResultSet rs) {
 		if (rs != null) {
 			try {
 				rs.close();
@@ -158,7 +156,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 * @param conn
 	 *            - {@link Connection} object
 	 */
-	protected void release(Connection conn) {
+	public static void release(Connection conn) {
 		close(conn);
 	}
 
@@ -168,7 +166,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 * @param st
 	 *            - {@link Statement} object
 	 */
-	protected void release(Statement st) {
+	public static void release(Statement st) {
 		close(st);
 	}
 
@@ -178,7 +176,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 * @param st
 	 *            - {@link ResultSet} object
 	 */
-	protected void release(ResultSet rs) {
+	public static void release(ResultSet rs) {
 		close(rs);
 	}
 
