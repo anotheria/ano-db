@@ -12,22 +12,22 @@ import org.apache.log4j.Logger;
  * 
  * @author Alexandr Bolbat
  */
-public final class ResourcesUtil {
+public final class JDBCUtil {
 
 	/**
 	 * Logger.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(ResourcesUtil.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(JDBCUtil.class.getName());
 
 	/**
 	 * Default constructor.
 	 */
-	private ResourcesUtil() {
+	private JDBCUtil() {
 		throw new IllegalAccessError("Can't instantiate utility class.");
 	}
 
 	/**
-	 * Close {@link Connection} if opened. All {@link SQLException} on closing are ignored.
+	 * Close {@link Connection} if it opened. If {@link SQLException} happen on closing it will be logged.
 	 * 
 	 * @param conn
 	 *            - {@link Connection} object
@@ -42,7 +42,7 @@ public final class ResourcesUtil {
 	}
 
 	/**
-	 * Close {@link Statement} if opened. All {@link SQLException} on closing are ignored.
+	 * Close {@link Statement} if it opened. If {@link SQLException} happen on closing it will be logged.
 	 * 
 	 * @param st
 	 *            - {@link Statement} object
@@ -57,7 +57,7 @@ public final class ResourcesUtil {
 	}
 
 	/**
-	 * Close {@link ResultSet} if opened. All {@link SQLException} on closing are ignored.
+	 * Close {@link ResultSet} if it opened. If {@link SQLException} happen on closing it will be logged.
 	 * 
 	 * @param st
 	 *            - {@link ResultSet} object
@@ -72,7 +72,7 @@ public final class ResourcesUtil {
 	}
 
 	/**
-	 * Close {@link Connection} if opened. All {@link SQLException} on closing are ignored.
+	 * Close {@link Connection} if it opened. If {@link SQLException} happen on closing it will be logged.
 	 * 
 	 * @param conn
 	 *            - {@link Connection} object
@@ -82,7 +82,7 @@ public final class ResourcesUtil {
 	}
 
 	/**
-	 * Close {@link Statement} if opened. All {@link SQLException} on closing are ignored.
+	 * Close {@link Statement} if it opened. If {@link SQLException} happen on closing it will be logged.
 	 * 
 	 * @param st
 	 *            - {@link Statement} object
@@ -92,7 +92,7 @@ public final class ResourcesUtil {
 	}
 
 	/**
-	 * Close {@link ResultSet} if opened. All {@link SQLException} on closing are ignored.
+	 * Close {@link ResultSet} if it opened. If {@link SQLException} happen on closing it will be logged.
 	 * 
 	 * @param st
 	 *            - {@link ResultSet} object
