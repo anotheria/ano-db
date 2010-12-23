@@ -34,9 +34,8 @@ public final class ResourcesUtil {
 	 */
 	public static void close(Connection conn) {
 		try {
-			if (conn != null && !conn.isClosed()) {
+			if (conn != null && !conn.isClosed())
 				conn.close();
-			}
 		} catch (SQLException e) {
 			LOGGER.warn("close(" + conn + ") fail.", e);
 		}
@@ -49,12 +48,11 @@ public final class ResourcesUtil {
 	 *            - {@link Statement} object
 	 */
 	public static void close(Statement st) {
-		if (st != null) {
-			try {
+		try {
+			if (st != null && !st.isClosed())
 				st.close();
-			} catch (SQLException e) {
-				LOGGER.warn("close(" + st + ") fail.", e);
-			}
+		} catch (SQLException e) {
+			LOGGER.warn("close(" + st + ") fail.", e);
 		}
 	}
 
@@ -65,12 +63,11 @@ public final class ResourcesUtil {
 	 *            - {@link ResultSet} object
 	 */
 	public static void close(ResultSet rs) {
-		if (rs != null) {
-			try {
+		try {
+			if (rs != null && !rs.isClosed())
 				rs.close();
-			} catch (SQLException e) {
-				LOGGER.warn("close(" + rs + ") fail.", e);
-			}
+		} catch (SQLException e) {
+			LOGGER.warn("close(" + rs + ") fail.", e);
 		}
 	}
 
