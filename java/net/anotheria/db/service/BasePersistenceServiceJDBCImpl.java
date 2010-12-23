@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.anotheria.db.config.JDBCConfig;
 import net.anotheria.db.config.JDBCConfigFactory;
+import net.anotheria.db.util.ResourcesUtil;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
@@ -106,78 +107,69 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	}
 
 	/**
-	 * Close {@link Connection} if opened. All {@link SQLException} on closing are ignored.
+	 * Close {@link Connection} if opened. All {@link SQLException} on closing are ignored. This method are @Deprecated, please use {@link ResourcesUtil}.
 	 * 
 	 * @param conn
 	 *            - {@link Connection} object
 	 */
+	@Deprecated
 	public static void close(Connection conn) {
-		try {
-			if (conn != null && !conn.isClosed()) {
-				conn.close();
-			}
-		} catch (SQLException e) {
-		}
+		ResourcesUtil.close(conn);
 	}
 
 	/**
-	 * Close {@link Statement} if opened. All {@link SQLException} on closing are ignored.
+	 * Close {@link Statement} if opened. All {@link SQLException} on closing are ignored. This method are @Deprecated, please use {@link ResourcesUtil}.
 	 * 
 	 * @param st
 	 *            - {@link Statement} object
 	 */
+	@Deprecated
 	public static void close(Statement st) {
-		if (st != null) {
-			try {
-				st.close();
-			} catch (SQLException e) {
-			}
-		}
+		ResourcesUtil.close(st);
 	}
 
 	/**
-	 * Close {@link ResultSet} if opened. All {@link SQLException} on closing are ignored.
+	 * Close {@link ResultSet} if opened. All {@link SQLException} on closing are ignored. This method are @Deprecated, please use {@link ResourcesUtil}.
 	 * 
 	 * @param st
 	 *            - {@link ResultSet} object
 	 */
+	@Deprecated
 	public static void close(ResultSet rs) {
-		if (rs != null) {
-			try {
-				rs.close();
-			} catch (SQLException e) {
-			}
-		}
+		ResourcesUtil.close(rs);
 	}
 
 	/**
-	 * Close {@link Connection} if opened. All {@link SQLException} on closing are ignored.
+	 * Close {@link Connection} if opened. All {@link SQLException} on closing are ignored. This method are @Deprecated, please use {@link ResourcesUtil}.
 	 * 
 	 * @param conn
 	 *            - {@link Connection} object
 	 */
+	@Deprecated
 	public static void release(Connection conn) {
-		close(conn);
+		ResourcesUtil.close(conn);
 	}
 
 	/**
-	 * Close {@link Statement} if opened. All {@link SQLException} on closing are ignored.
+	 * Close {@link Statement} if opened. All {@link SQLException} on closing are ignored. This method are @Deprecated, please use {@link ResourcesUtil}.
 	 * 
 	 * @param st
 	 *            - {@link Statement} object
 	 */
+	@Deprecated
 	public static void release(Statement st) {
-		close(st);
+		ResourcesUtil.close(st);
 	}
 
 	/**
-	 * Close {@link ResultSet} if opened. All {@link SQLException} on closing are ignored.
+	 * Close {@link ResultSet} if opened. All {@link SQLException} on closing are ignored. This method are @Deprecated, please use {@link ResourcesUtil}.
 	 * 
 	 * @param st
 	 *            - {@link ResultSet} object
 	 */
+	@Deprecated
 	public static void release(ResultSet rs) {
-		close(rs);
+		ResourcesUtil.close(rs);
 	}
 
 	/**
