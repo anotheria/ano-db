@@ -49,7 +49,7 @@ public final class JDBCUtil {
 	 */
 	public static void close(Statement st) {
 		try {
-			if (st != null && !st.isClosed())
+			if (st != null)
 				st.close();
 		} catch (SQLException e) {
 			LOGGER.warn("close(" + st + ") fail.", e);
@@ -64,7 +64,7 @@ public final class JDBCUtil {
 	 */
 	public static void close(ResultSet rs) {
 		try {
-			if (rs != null && !rs.isClosed())
+			if (rs != null)
 				rs.close();
 		} catch (SQLException e) {
 			LOGGER.warn("close(" + rs + ") fail.", e);
