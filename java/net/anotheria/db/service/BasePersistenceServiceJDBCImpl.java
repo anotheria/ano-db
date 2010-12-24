@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.anotheria.db.config.JDBCConfig;
 import net.anotheria.db.config.JDBCConfigFactory;
-import net.anotheria.db.util.JDBCUtil;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
@@ -113,7 +112,11 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 *            - {@link Connection} object
 	 */
 	protected void close(Connection conn) {
-		JDBCUtil.close(conn);
+		try {
+			if (conn != null && !conn.isClosed())
+				conn.close();
+		} catch (SQLException e) {
+		}
 	}
 
 	/**
@@ -123,7 +126,11 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 *            - {@link Statement} object
 	 */
 	protected void close(Statement st) {
-		JDBCUtil.close(st);
+		try {
+			if (st != null)
+				st.close();
+		} catch (SQLException e) {
+		}
 	}
 
 	/**
@@ -133,7 +140,11 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 *            - {@link ResultSet} object
 	 */
 	protected void close(ResultSet rs) {
-		JDBCUtil.close(rs);
+		try {
+			if (rs != null)
+				rs.close();
+		} catch (SQLException e) {
+		}
 	}
 
 	/**
@@ -143,7 +154,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 *            - {@link Connection} object
 	 */
 	protected void release(Connection conn) {
-		JDBCUtil.release(conn);
+		close(conn);
 	}
 
 	/**
@@ -153,7 +164,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 *            - {@link Statement} object
 	 */
 	protected void release(Statement st) {
-		JDBCUtil.release(st);
+		close(st);
 	}
 
 	/**
@@ -163,7 +174,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	 *            - {@link ResultSet} object
 	 */
 	protected void release(ResultSet rs) {
-		JDBCUtil.release(rs);
+		close(rs);
 	}
 
 	/**
