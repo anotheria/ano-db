@@ -107,69 +107,63 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	}
 
 	/**
-	 * This method are @Deprecated, please use {@link JDBCUtil}.
+	 * Close {@link Connection} if it opened. If {@link SQLException} happen on closing it will be logged.
 	 * 
 	 * @param conn
 	 *            - {@link Connection} object
 	 */
-	@Deprecated
-	public static void close(Connection conn) {
+	protected void close(Connection conn) {
 		JDBCUtil.close(conn);
 	}
 
 	/**
-	 * This method are @Deprecated, please use {@link JDBCUtil}.
+	 * Close {@link Statement} if it opened. If {@link SQLException} happen on closing it will be logged.
 	 * 
 	 * @param st
 	 *            - {@link Statement} object
 	 */
-	@Deprecated
-	public static void close(Statement st) {
+	protected void close(Statement st) {
 		JDBCUtil.close(st);
 	}
 
 	/**
-	 * This method are @Deprecated, please use {@link JDBCUtil}.
+	 * Close {@link ResultSet} if it opened. If {@link SQLException} happen on closing it will be logged.
 	 * 
 	 * @param st
 	 *            - {@link ResultSet} object
 	 */
-	@Deprecated
-	public static void close(ResultSet rs) {
+	protected void close(ResultSet rs) {
 		JDBCUtil.close(rs);
 	}
 
 	/**
-	 * This method are @Deprecated, please use {@link JDBCUtil}.
+	 * Close {@link Connection} if it opened. If {@link SQLException} happen on closing it will be logged.
 	 * 
 	 * @param conn
 	 *            - {@link Connection} object
 	 */
-	@Deprecated
-	public static void release(Connection conn) {
-		JDBCUtil.close(conn);
+	protected void release(Connection conn) {
+		JDBCUtil.release(conn);
 	}
 
 	/**
-	 * This method are @Deprecated, please use {@link JDBCUtil}.
+	 * Close {@link Statement} if it opened. If {@link SQLException} happen on closing it will be logged.
 	 * 
 	 * @param st
 	 *            - {@link Statement} object
 	 */
-	@Deprecated
-	public static void release(Statement st) {
-		JDBCUtil.close(st);
+	protected void release(Statement st) {
+		JDBCUtil.release(st);
 	}
 
 	/**
-	 * This method are @Deprecated, please use {@link JDBCUtil}.
+	 * Close {@link ResultSet} if it opened. If {@link SQLException} happen on closing it will be logged.
 	 * 
 	 * @param st
 	 *            - {@link ResultSet} object
 	 */
-	@Deprecated
-	public static void release(ResultSet rs) {
-		JDBCUtil.close(rs);
+	protected void release(ResultSet rs) {
+		JDBCUtil.release(rs);
 	}
 
 	/**
