@@ -75,6 +75,11 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 
 			conn.commit();
 		} catch (SQLException e) {
+			try {
+				conn.rollback();
+			} catch (SQLException sqle) {
+				LOGGER.fatal("initializePersistence() rollback fail.", sqle);
+			}
 			String message = "initializePersistence() fail.";
 			LOGGER.fatal(message, e);
 			new RuntimeException(message, e);
