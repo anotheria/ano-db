@@ -5,66 +5,49 @@ package net.anotheria.db.util;
  *
  * @author h3ll
  */
-
 import org.apache.log4j.Logger;
 import org.configureme.ConfigurationManager;
 import org.configureme.annotations.Configure;
 import org.configureme.annotations.ConfigureMe;
 
-
 @ConfigureMe(name = "ano-db-ddl-config")
 public class DDLConfig {
 
-    /**
-     * DDLConfig "dbOwnerName", configurable database owner name.
-     */
-    @Configure
-    private String dbOwnerName;
+	/**
+	 * Configuration instance.
+	 */
+	private static DDLConfig INSTANCE;
 
-    /**
-     * Get instance method.
-     *
-     * @return {@link DDLConfig}
-     */
-    public static DDLConfig getInstance() {
-        return DDLInstanceHolder.INSTANCE;
-    }
+	/**
+	 * DDLConfig "dbOwnerName", configurable database owner name.
+	 */
+	@Configure
+	private String dbOwnerName;
 
-    /**
-     * Private constructor with default initialisation.
-     */
-    private DDLConfig() {
-        //By default owner set to "postgres"! Use config to override current!
-        this.dbOwnerName = "postgres";
-    }
+	/**
+	 * Get instance method.
+	 * 
+	 * @return {@link DDLConfig}
+	 */
+	public static synchronized DDLConfig getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new DDLConfig();
 
-    public String getDbOwnerName() {
-        return dbOwnerName;
-    }
+			try {
+				ConfigurationManager.INSTANCE.configure(INSTANCE);
+			} catch (Exception e) {
+				Logger.getLogger(DDLConfig.class.getName()).error("getInstance() Configuration failed. Configuring with defaults.", e);
+			}
+		}
 
-    public void setDbOwnerName(String dbOwnerName) {
-        this.dbOwnerName = dbOwnerName;
-    }
+		return INSTANCE;
+	}
 
-    /**
-     * Holder class for {@link DDLConfig}.
-     */
-    private static class DDLInstanceHolder {
-        /**
-         * Instance of DDLConfig.
-         */
-        private static final DDLConfig INSTANCE;
+	public String getDbOwnerName() {
+		return dbOwnerName;
+	}
 
-        /**
-         * Init block.
-         */
-        static {
-            INSTANCE = new DDLConfig();
-            try {
-                ConfigurationManager.INSTANCE.configure(INSTANCE);
-            } catch (Exception e) {
-                Logger.getLogger(DDLConfig.DDLInstanceHolder.class).error("Configuration failed. Relying on defaults", e);
-            }
-        }
-    }
+	public void setDbOwnerName(String dbOwnerName) {
+		this.dbOwnerName = dbOwnerName;
+	}
 }
