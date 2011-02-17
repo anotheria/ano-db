@@ -101,4 +101,19 @@ public final class JDBCUtil {
 		close(rs);
 	}
 
+	/**
+	 * Roll back executed queries from last commit for given connection. If {@link SQLException} happen on closing it will be logged.
+	 * 
+	 * @param conn
+	 *            - {@link Connection}
+	 */
+	public static void rollback(Connection conn) {
+		try {
+			if (conn != null && !conn.isClosed())
+				conn.rollback();
+		} catch (SQLException sqle) {
+			LOGGER.warn("rollback(java.sql.Connection) rollback fail.", sqle);
+		}
+	}
+
 }

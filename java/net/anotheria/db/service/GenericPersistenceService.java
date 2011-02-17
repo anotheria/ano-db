@@ -75,11 +75,7 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 
 			conn.commit();
 		} catch (SQLException e) {
-			try {
-				conn.rollback();
-			} catch (SQLException sqle) {
-				LOGGER.fatal("initializePersistence() rollback fail.", sqle);
-			}
+			JDBCUtil.rollback(conn);
 			String message = "initializePersistence() fail.";
 			LOGGER.fatal(message, e);
 			new RuntimeException(message, e);
@@ -89,6 +85,11 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 		}
 	}
 
+	/**
+	 * Method for checking is table exist in database.
+	 * 
+	 * @return <code>true</code> if exist or <code>false</code>
+	 */
 	private boolean isTableExist() {
 		Connection conn = null;
 		ResultSet rs = null;
