@@ -25,9 +25,9 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 	private static final Logger LOGGER = Logger.getLogger(GenericPersistenceService.class.getName());
 
 	/**
-	 * 
+	 * Database meta data field name for table name field in result set from getTables(...) method.
 	 */
-	private static final String DMD_F_TABLE_NAME = "TABLE_NAME";
+	public static final String DMD_F_TABLE_NAME = "TABLE_NAME";
 
 	/**
 	 * Current primary key max id.
