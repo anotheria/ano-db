@@ -99,8 +99,8 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 			conn.setAutoCommit(true);
 
 			DatabaseMetaData dmd = conn.getMetaData();
-			rs = dmd.getTables(null, null, getTableName().toUpperCase(), null);
-			if (rs.next())
+			rs = dmd.getTables(null, null, null, new String[] { "TABLE" });
+			while (rs.next() && rs.getString("TABLE_NAME") != null && rs.getString("TABLE_NAME").equalsIgnoreCase(getTableName()))
 				return true;
 		} catch (SQLException e) {
 			String message = "isTableExist() fail.";
@@ -142,7 +142,7 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 			conn.setAutoCommit(true);
 
 			st = conn.createStatement();
-			rs = st.executeQuery(("SELECT MAX(" + fieldName + ") FROM " + tableName).toUpperCase());
+			rs = st.executeQuery("SELECT MAX(" + fieldName + ") FROM " + tableName);
 
 			if (rs.next())
 				id.set(rs.getLong(1));
