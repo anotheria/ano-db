@@ -99,7 +99,7 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 			conn.setAutoCommit(true);
 
 			DatabaseMetaData dmd = conn.getMetaData();
-			rs = dmd.getTables(null, null, getTableName(), null);
+			rs = dmd.getTables(null, null, getTableName().toUpperCase(), null);
 			if (rs.next())
 				return true;
 		} catch (SQLException e) {
@@ -142,7 +142,7 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 			conn.setAutoCommit(true);
 
 			st = conn.createStatement();
-			rs = st.executeQuery("SELECT MAX(" + fieldName + ") FROM " + tableName);
+			rs = st.executeQuery(("SELECT MAX(" + fieldName + ") FROM " + tableName).toUpperCase());
 
 			if (rs.next())
 				id.set(rs.getLong(1));
