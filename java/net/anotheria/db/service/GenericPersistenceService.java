@@ -25,6 +25,11 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 	private static final Logger LOGGER = Logger.getLogger(GenericPersistenceService.class.getName());
 
 	/**
+	 * 
+	 */
+	private static final String DMD_F_TABLE_NAME = "TABLE_NAME";
+
+	/**
 	 * Current primary key max id.
 	 */
 	private AtomicLong id = new AtomicLong();
@@ -100,7 +105,7 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 
 			DatabaseMetaData dmd = conn.getMetaData();
 			rs = dmd.getTables(null, null, null, new String[] { "TABLE" });
-			while (rs.next() && rs.getString("TABLE_NAME") != null && rs.getString("TABLE_NAME").equalsIgnoreCase(getTableName()))
+			while (rs.next() && rs.getString(DMD_F_TABLE_NAME) != null && rs.getString(DMD_F_TABLE_NAME).equalsIgnoreCase(getTableName()))
 				return true;
 		} catch (SQLException e) {
 			String message = "isTableExist() fail.";
