@@ -54,7 +54,7 @@ public final class DBUtil extends BasePersistenceServiceJDBCImpl {
 	 * 
 	 * @return {@link DBUtil}
 	 */
-	public static synchronized DBUtil getInstace() {
+	public static synchronized DBUtil getInstance() {
 		if (INSTANCE == null)
 			INSTANCE = new DBUtil();
 
