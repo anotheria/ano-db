@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.anotheria</groupId>
   <artifactId>ano-db</artifactId>
-  <version>1.0.9-SNAPSHOT</version>
+  <version>1.0.9</version>
   <name>anotheria.net db utils</name>
 
   <dependencies>
@@ -33,9 +33,9 @@
   
 
 	<scm>
-		<url>svn:svn://svn.anotheria.net/opensource/ano-db/trunk</url>
-		<connection>scm:svn:svn://svn.anotheria.net/opensource/ano-db/trunk</connection>
-		<developerConnection>scm:svn:svn://svn.anotheria.net/opensource/ano-db/trunk</developerConnection>
+		<url>svn:svn://svn.anotheria.net/opensource/ano-db/tags/ano-db-1.0.9</url>
+		<connection>scm:svn:svn://svn.anotheria.net/opensource/ano-db/tags/ano-db-1.0.9</connection>
+		<developerConnection>scm:svn:svn://svn.anotheria.net/opensource/ano-db/tags/ano-db-1.0.9</developerConnection>
 	</scm>
 
 </project>
