@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import net.anotheria.db.util.JDBCUtil;
+import net.anotheria.util.StringUtils;
 
 import org.apache.log4j.Logger;
 
@@ -56,7 +57,14 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 	 * Initialize generic persistence service functional.
 	 */
 	private void initialize() {
+		if (StringUtils.isEmpty(getTableName()))
+			return;
+
 		initializePersistence();
+
+		if (StringUtils.isEmpty(getPKFieldName()))
+			return;
+
 		initializeId();
 	}
 
@@ -165,14 +173,14 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 	}
 
 	/**
-	 * Get persistence service table name.
+	 * Get persistence service table name. If method return <code>null</code> DDL will be not executed.
 	 * 
 	 * @return {@link String}
 	 */
 	protected abstract String getTableName();
 
 	/**
-	 * Get persistence service primary key field name.
+	 * Get persistence service primary key field name. If method return <code>null</code> id will be initialized with 0 value.
 	 * 
 	 * @return {@link String}
 	 */
