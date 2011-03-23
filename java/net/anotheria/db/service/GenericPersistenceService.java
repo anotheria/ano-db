@@ -50,13 +50,12 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 	 */
 	public GenericPersistenceService(String configFile) {
 		super(configFile);
-		initialize();
 	}
 
 	/**
 	 * Initialize generic persistence service functional.
 	 */
-	private void initialize() {
+	protected void initialize() {
 		if (StringUtils.isEmpty(getTableName()))
 			return;
 
