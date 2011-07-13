@@ -1,5 +1,9 @@
 package net.anotheria.db.service;
 
+import net.anotheria.db.util.JDBCUtil;
+import net.anotheria.util.StringUtils;
+import org.apache.log4j.Logger;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -8,14 +12,9 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import net.anotheria.db.util.JDBCUtil;
-import net.anotheria.util.StringUtils;
-
-import org.apache.log4j.Logger;
-
 /**
  * Generic persistence service with additional functional.
- * 
+ *
  * @author Alexandr Bolbat
  */
 public abstract class GenericPersistenceService extends BasePersistenceServiceJDBCImpl {
@@ -44,9 +43,8 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 
 	/**
 	 * Public constructor.
-	 * 
-	 * @param configFile
-	 *            - JDBC configuration file name
+	 *
+	 * @param configFile - JDBC configuration file name
 	 */
 	public GenericPersistenceService(String configFile) {
 		super(configFile);
@@ -99,7 +97,7 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 
 	/**
 	 * Method for checking is table exist in database.
-	 * 
+	 *
 	 * @return <code>true</code> if exist or <code>false</code>
 	 */
 	private boolean isTableExist() {
@@ -111,9 +109,12 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 			conn.setAutoCommit(true);
 
 			DatabaseMetaData dmd = conn.getMetaData();
-			rs = dmd.getTables(null, null, null, new String[] { "TABLE" });
-			while (rs.next() && rs.getString(DMD_F_TABLE_NAME) != null && rs.getString(DMD_F_TABLE_NAME).equalsIgnoreCase(getTableName()))
-				return true;
+			rs = dmd.getTables(null, null, null, new String[]{"TABLE"});
+			while (rs.next()) {
+				String currentTable = rs.getString(DMD_F_TABLE_NAME);
+				if (!StringUtils.isEmpty(currentTable) && currentTable.equalsIgnoreCase(getTableName()))
+					return true;
+			}
 		} catch (SQLException e) {
 			String message = "isTableExist() fail.";
 			LOGGER.fatal(message, e);
@@ -128,19 +129,13 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 
 	/**
 	 * Get DDL queries for creating persistence structure.
-	 * 
+	 *
 	 * @return {@link List} of {@link String}
 	 */
 	protected abstract List<String> getDDL();
 
 	/**
 	 * Initialize id.
-	 * 
-	 * @param tableName
-	 *            - table name
-	 * @param fieldName
-	 *            - primary key field name
-	 * @return {@link Long} current max id
 	 */
 	private void initializeId() {
 		String tableName = getTableName();
@@ -173,21 +168,21 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 
 	/**
 	 * Get persistence service table name. If method return <code>null</code> DDL will be not executed.
-	 * 
+	 *
 	 * @return {@link String}
 	 */
 	protected abstract String getTableName();
 
 	/**
 	 * Get persistence service primary key field name. If method return <code>null</code> id will be initialized with 0 value.
-	 * 
+	 *
 	 * @return {@link String}
 	 */
 	protected abstract String getPKFieldName();
 
 	/**
 	 * Reserve and get next id.
-	 * 
+	 *
 	 * @return {@link Long} next id
 	 */
 	protected long getNextId() {
