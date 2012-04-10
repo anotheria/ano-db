@@ -1,9 +1,5 @@
 package net.anotheria.db.service;
 
-import net.anotheria.db.util.JDBCUtil;
-import net.anotheria.util.StringUtils;
-import org.apache.log4j.Logger;
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -11,6 +7,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+
+import net.anotheria.db.util.JDBCUtil;
+import net.anotheria.util.StringUtils;
+
+import org.apache.log4j.Logger;
 
 /**
  * Generic persistence service with additional functional.
@@ -137,7 +138,7 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 	/**
 	 * Initialize id.
 	 */
-	private void initializeId() {
+	protected void initializeId() {
 		String tableName = getTableName();
 		String fieldName = getPKFieldName();
 		Connection conn = null;
