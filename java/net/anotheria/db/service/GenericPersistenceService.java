@@ -1,5 +1,10 @@
 package net.anotheria.db.service;
 
+import net.anotheria.db.util.JDBCUtil;
+import net.anotheria.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -7,11 +12,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-
-import net.anotheria.db.util.JDBCUtil;
-import net.anotheria.util.StringUtils;
-
-import org.apache.log4j.Logger;
 
 /**
  * Generic persistence service with additional functional.
@@ -23,7 +23,7 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 	/**
 	 * Logger.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(GenericPersistenceService.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(GenericPersistenceService.class.getName());
 
 	/**
 	 * Database meta data field name for table name field in result set from getTables(...) method.
@@ -88,7 +88,7 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 		} catch (SQLException e) {
 			JDBCUtil.rollback(conn);
 			String message = "initializePersistence() fail.";
-			LOGGER.fatal(message, e);
+			LOGGER.error(message, e);
 			new RuntimeException(message, e);
 		} finally {
 			JDBCUtil.release(st);
@@ -118,7 +118,7 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 			}
 		} catch (SQLException e) {
 			String message = "isTableExist() fail.";
-			LOGGER.fatal(message, e);
+			LOGGER.error(message, e);
 			new RuntimeException(message, e);
 		} finally {
 			JDBCUtil.release(rs);
@@ -158,7 +158,7 @@ public abstract class GenericPersistenceService extends BasePersistenceServiceJD
 			LOGGER.debug("initId(" + tableName + ", " + fieldName + ") success. Id: " + id.get());
 		} catch (SQLException e) {
 			String message = "initId(" + tableName + ", " + fieldName + ") fail.";
-			LOGGER.fatal(message, e);
+			LOGGER.error(message, e);
 			new RuntimeException(message, e);
 		} finally {
 			JDBCUtil.release(rs);

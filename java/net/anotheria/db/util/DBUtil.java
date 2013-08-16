@@ -1,14 +1,14 @@
 package net.anotheria.db.util;
 
+import net.anotheria.db.service.BasePersistenceServiceJDBCImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import net.anotheria.db.service.BasePersistenceServiceJDBCImpl;
-
-import org.apache.log4j.Logger;
 
 /**
  * Utility with some operations on database.
@@ -20,7 +20,7 @@ public final class DBUtil extends BasePersistenceServiceJDBCImpl {
 	/**
 	 * Logger.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(DBUtil.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(DBUtil.class.getName());
 
 	/**
 	 * Database meta data field name for table name field in result set from getTables(...) method.

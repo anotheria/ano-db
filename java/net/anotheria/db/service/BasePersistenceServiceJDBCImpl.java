@@ -1,5 +1,11 @@
 package net.anotheria.db.service;
 
+import net.anotheria.db.config.JDBCConfig;
+import net.anotheria.db.config.JDBCConfigFactory;
+import org.apache.commons.dbcp.BasicDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -17,12 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import net.anotheria.db.config.JDBCConfig;
-import net.anotheria.db.config.JDBCConfigFactory;
-
-import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.log4j.Logger;
-
 /**
  * Base persistence service.
  */
@@ -36,7 +36,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	/**
 	 * Logger.
 	 */
-	protected Logger log = Logger.getLogger(BasePersistenceServiceJDBCImpl.class.getClass());
+	protected Logger log = LoggerFactory.getLogger(BasePersistenceServiceJDBCImpl.class.getClass());
 
 	/**
 	 * PROXY factory.

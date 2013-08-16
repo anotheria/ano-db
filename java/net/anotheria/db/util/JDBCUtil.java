@@ -1,11 +1,12 @@
 package net.anotheria.db.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import org.apache.log4j.Logger;
 
 /**
  * Utility class for closing JDBC resources.
@@ -17,7 +18,7 @@ public final class JDBCUtil {
 	/**
 	 * Logger.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(JDBCUtil.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(JDBCUtil.class.getName());
 
 	/**
 	 * Default constructor.

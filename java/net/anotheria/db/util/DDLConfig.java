@@ -5,10 +5,11 @@ package net.anotheria.db.util;
  *
  * @author h3ll
  */
-import org.apache.log4j.Logger;
+
 import org.configureme.ConfigurationManager;
 import org.configureme.annotations.Configure;
 import org.configureme.annotations.ConfigureMe;
+import org.slf4j.LoggerFactory;
 
 @ConfigureMe(name = "ano-db-ddl-config")
 public class DDLConfig {
@@ -36,7 +37,7 @@ public class DDLConfig {
 			try {
 				ConfigurationManager.INSTANCE.configure(INSTANCE);
 			} catch (Exception e) {
-				Logger.getLogger(DDLConfig.class.getName()).error("getInstance() Configuration failed. Configuring with defaults.", e);
+				LoggerFactory.getLogger(DDLConfig.class.getName()).error("getInstance() Configuration failed. Configuring with defaults.", e);
 			}
 		}
 
