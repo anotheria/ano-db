@@ -122,7 +122,7 @@ public final class DBUtil extends BasePersistenceServiceJDBCImpl {
 
 			st.executeUpdate(dropSQL);
 		} catch (SQLException e) {
-			String message = "dropTable(conn, " + tableName + "," + isCascadeDrop + ") fail.";
+			String message = "dropTable(conn, " + tableName + ',' + isCascadeDrop + ") fail.";
 			LOGGER.warn(message, e);
 		} finally {
 			JDBCUtil.release(st);
