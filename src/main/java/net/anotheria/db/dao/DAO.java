@@ -11,11 +11,11 @@ public interface DAO {
 	/**
 	 * Attribute name for created timestamp of a row. Created and Updated are automatically written by DAOs.
 	 */
-	public static final String ATT_NAME_DAO_CREATED = "dao_created";
+    String ATT_NAME_DAO_CREATED = "dao_created";
 	/**
 	 * Attribute name for last updated timestamp of a row. Created and Updated are automatically written by DAOs.
 	 */
-	public static final String ATT_NAME_DAO_UPDATED = "dao_updated";
+    String ATT_NAME_DAO_UPDATED = "dao_updated";
 
 	/**
 	 * Creates initial DB structure.

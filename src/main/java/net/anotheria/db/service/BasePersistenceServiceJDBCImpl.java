@@ -2,7 +2,7 @@ package net.anotheria.db.service;
 
 import net.anotheria.db.config.JDBCConfig;
 import net.anotheria.db.config.JDBCConfigFactory;
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,8 +19,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -74,15 +74,15 @@ public abstract class BasePersistenceServiceJDBCImpl {
 		JDBCConfig config = (configName == null) ? JDBCConfigFactory.getJDBCConfig() : JDBCConfigFactory.getNamedJDBCConfig(configName);
 		log.info("Using config: " + config);
 		newDataSource.setDriverClassName(config.getDriver());
-		if (config.getPreconfiguredJdbcUrl() != null && config.getPreconfiguredJdbcUrl().length() > 0)
+		if (config.getPreconfiguredJdbcUrl() != null && !config.getPreconfiguredJdbcUrl().isEmpty())
 			newDataSource.setUrl(config.getPreconfiguredJdbcUrl());
 		else
-			newDataSource.setUrl("jdbc:" + config.getVendor() + "://" + config.getHost() + ":" + config.getPort() + "/" + config.getDb());
+			newDataSource.setUrl("jdbc:" + config.getVendor() + "://" + config.getHost() + ':' + config.getPort() + '/' + config.getDb());
 		newDataSource.setUsername(config.getUsername());
 		newDataSource.setPassword(config.getPassword());
 
 		if (config.getMaxConnections() != Integer.MAX_VALUE)
-			newDataSource.setMaxActive(config.getMaxConnections());
+			newDataSource.setMaxTotal(config.getMaxConnections());
 
 		this.dataSource = newDataSource;
 	}
@@ -214,8 +214,8 @@ public abstract class BasePersistenceServiceJDBCImpl {
 		public static final String CLOSE = "close";
 		public static final String IS_CLOSED = "isClosed";
 
-		public final Set<String> methodNames = new HashSet<String>();
-		public final Set<String> classNames = new HashSet<String>();
+		public final Collection<String> methodNames = new HashSet<>();
+		public final Collection<String> classNames = new HashSet<>();
 
 		public GenericReconnectionProxyFactory() {
 			methodNames.add(CREATE_STATEMENT);
