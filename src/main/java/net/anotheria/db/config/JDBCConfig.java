@@ -70,7 +70,7 @@ public class JDBCConfig{
 	}
 
 	@Override public String toString(){
-        return "Driver: "+ driver +", Vendor: "+ vendor +", DB: "+ db +", Username: "+ username +", Pwd: **** @ "+ host + ':' + port +", perconfigured: "+ preconfiguredJdbcUrl;
+        return "Driver: "+ driver +", Vendor: "+ vendor +", DB: "+ db +", Username: "+ username +", Pwd: **** @ "+ host + ':' + port +", pre-configured: "+ preconfiguredJdbcUrl;
 	}
 
 	public String getDriver() {
