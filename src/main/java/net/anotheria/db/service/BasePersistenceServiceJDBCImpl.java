@@ -36,7 +36,7 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	/**
 	 * Logger.
 	 */
-	protected Logger log = LoggerFactory.getLogger(BasePersistenceServiceJDBCImpl.class.getClass());
+	protected Logger log = LoggerFactory.getLogger(BasePersistenceServiceJDBCImpl.class);
 
 	/**
 	 * PROXY factory.
