@@ -3,25 +3,25 @@
   <parent>
 	<groupId>net.anotheria</groupId>
 	<artifactId>parent</artifactId>
-	<version>2.15</version>
+	<version>4.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.anotheria</groupId>
   <artifactId>ano-db</artifactId>
-  <version>2.1.3-SNAPSHOT</version>
+  <version>4.0.0-SNAPSHOT</version>
   <name>anotheria.net db utils</name>
 
   <dependencies>
 	<dependency>
 		<groupId>net.anotheria</groupId>
 		<artifactId>ano-util</artifactId>
-        <version>2.2.2-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
 	</dependency>
 	<dependency>
 		<groupId>net.anotheria</groupId>
 		<artifactId>configureme</artifactId>
-        <version>2.6.1-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <exclusions>
             <exclusion>
                 <artifactId>log4j-core</artifactId>
