@@ -135,9 +135,6 @@ public abstract class BasePersistenceServiceJDBCImpl {
 
 	/**
 	 * Close {@link ResultSet} if it opened. If {@link SQLException} happen on closing it will be logged.
-	 * 
-	 * @param st
-	 *            - {@link ResultSet} object
 	 */
 	protected void close(ResultSet rs) {
 		try {
@@ -170,8 +167,6 @@ public abstract class BasePersistenceServiceJDBCImpl {
 	/**
 	 * Close {@link ResultSet} if it opened. If {@link SQLException} happen on closing it will be logged.
 	 * 
-	 * @param st
-	 *            - {@link ResultSet} object
 	 */
 	protected void release(ResultSet rs) {
 		close(rs);
